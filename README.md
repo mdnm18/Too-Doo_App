@@ -1,8 +1,4 @@
-# Too-Doo_App
-Too-Doo App
-
-
-# 📝 Too-Doo App - README
+# 📝 Too-Doo App
 
 ## 🚀 Overview
 Welcome to **Too-Doo App** – a feature-packed, intuitive, and beautifully designed **Task & Notes Manager** 🗂️✨. With a **live body background 🌟, smart reminders ⏰📍, offline support 📶, haptic feedback 📳, and a digital clock ⏳**, this app helps you organize your life efficiently! Built with Progressive Web App (**PWA**) capabilities, it works seamlessly **offline & online**.
