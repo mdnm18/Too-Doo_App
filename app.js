@@ -98,11 +98,213 @@ class TaskManager {
     new ClockManager();
     this.tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     this.currentFilter = "all";
+    this.checkNotificationPermission();
     this.initializeEventListeners();
     this.renderTasks();
     this.updateStats();
     this.setupServiceWorker();
     this.setupOfflineStatus();
+    this.initializeReminderChecker();
+  }
+
+  async checkNotificationPermission() {
+    if (!("Notification" in window)) {
+      console.log("This browser does not support notifications");
+      return;
+    }
+
+    if (Notification.permission !== "granted") {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+          this.showNotification("Notifications enabled successfully!");
+        }
+      } catch (error) {
+        console.error("Error requesting notification permission:", error);
+      }
+    }
+  }
+
+  initializeReminderChecker() {
+    // Check for due reminders every minute
+    setInterval(() => this.checkReminders(), 60000);
+    // Also check immediately
+    this.checkReminders();
+  }
+
+  checkReminders() {
+    const now = new Date();
+    this.tasks.forEach((task) => {
+      if (task.reminder && !task.completed && !task.notificationSent) {
+        const reminderTime = new Date(task.reminder);
+        if (now >= reminderTime) {
+          this.sendNotification(task);
+          // Mark notification as sent
+          task.notificationSent = true;
+          this.saveTasks();
+        }
+      }
+    });
+  }
+
+  sendNotification(task) {
+    if (Notification.permission === "granted") {
+      const notification = new Notification("Task Reminder", {
+        body: task.text,
+        icon: "/assets/favicon.png",
+        badge: "/assets/favicon.png",
+        tag: `task-${task.id}`,
+        renotify: true,
+        requireInteraction: true,
+      });
+
+      notification.onclick = () => {
+        window.focus();
+        document.querySelector(`[data-task-id="${task.id}"]`)?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      };
+    }
+  }
+
+  addTask() {
+    const input = document.getElementById("taskInput");
+    const reminderInput = document.getElementById("taskReminder");
+    const taskText = input.value.trim();
+    const reminderTime = reminderInput?.value;
+
+    if (taskText) {
+      const task = {
+        id: Date.now(),
+        text: taskText,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        reminder: reminderTime || null,
+        notificationSent: false,
+      };
+
+      this.tasks.unshift(task);
+      this.saveTasks();
+      this.renderTasks();
+      input.value = "";
+      if (reminderInput) reminderInput.value = "";
+      localStorage.removeItem("draft-task");
+
+      if (task.reminder) {
+        this.showNotification(
+          `Reminder set for: ${new Date(task.reminder).toLocaleString()}`
+        );
+      }
+    }
+  }
+
+  createTaskElement(task) {
+    const li = document.createElement("li");
+    li.className = `task-item ${task.completed ? "completed" : ""}`;
+    li.dataset.taskId = task.id;
+
+    const reminderHtml = task.reminder
+      ? `
+      <div class="task-reminder">
+        <i class="fas fa-bell"></i>
+        ${new Date(task.reminder).toLocaleString()}
+        <button class="remove-reminder-btn" aria-label="Remove reminder">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `
+      : "";
+
+    li.innerHTML = `
+      <div class="task-content">
+        <input type="checkbox" class="task-checkbox" 
+          ${task.completed ? "checked" : ""} 
+          aria-label="${
+            task.completed ? "Mark task as incomplete" : "Mark task as complete"
+          }">
+        <span class="task-text">${this.escapeHtml(task.text)}</span>
+        ${reminderHtml}
+        <span class="task-date">${this.formatDate(task.createdAt)}</span>
+      </div>
+      <div class="task-actions">
+        <button class="reminder-btn" aria-label="Set reminder">
+          <i class="fas fa-bell"></i>
+        </button>
+        <button class="edit-btn" aria-label="Edit task">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="delete-btn" aria-label="Delete task">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    `;
+
+    // Add existing event listeners
+    const checkbox = li.querySelector(".task-checkbox");
+    checkbox.addEventListener("change", () => {
+      this.toggleTask(task.id);
+      li.classList.add("task-updated");
+      setTimeout(() => li.classList.remove("task-updated"), 300);
+    });
+
+    // Add reminder button handler
+    const reminderBtn = li.querySelector(".reminder-btn");
+    reminderBtn.addEventListener("click", () => this.setReminder(task.id));
+
+    // Add remove reminder button handler
+    const removeReminderBtn = li.querySelector(".remove-reminder-btn");
+    if (removeReminderBtn) {
+      removeReminderBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.removeReminder(task.id);
+      });
+    }
+
+    // Add existing edit and delete handlers
+    const editBtn = li.querySelector(".edit-btn");
+    editBtn.addEventListener("click", () => this.editTask(task.id));
+
+    const deleteBtn = li.querySelector(".delete-btn");
+    deleteBtn.addEventListener("click", () => this.deleteTask(task.id));
+
+    return li;
+  }
+
+  setReminder(taskId) {
+    const task = this.tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    const currentDateTime = new Date().toISOString().slice(0, 16);
+    const reminderDateTime = prompt(
+      "Set reminder (yyyy-mm-dd hh:mm):",
+      currentDateTime
+    );
+
+    if (reminderDateTime) {
+      const reminderTime = new Date(reminderDateTime);
+      if (isNaN(reminderTime)) {
+        this.showNotification("Invalid date format!", "error");
+        return;
+      }
+
+      task.reminder = reminderTime.toISOString();
+      task.notificationSent = false;
+      this.saveTasks();
+      this.renderTasks();
+      this.showNotification("Reminder set successfully!");
+    }
+  }
+
+  removeReminder(taskId) {
+    const task = this.tasks.find((t) => t.id === taskId);
+    if (task) {
+      task.reminder = null;
+      task.notificationSent = false;
+      this.saveTasks();
+      this.renderTasks();
+      this.showNotification("Reminder removed!");
+    }
   }
 
   setupOfflineStatus() {

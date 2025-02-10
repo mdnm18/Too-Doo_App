@@ -167,8 +167,8 @@ body,
     rgba(191, 189, 189, 0.7),
     rgba(1, 1, 75, 0.5)
   );
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 0.5rem 0;
   position: sticky;
@@ -653,8 +653,8 @@ header h1 span {
   padding: 80px 50px 40px;
   margin-top: auto;
   overflow: hidden;
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 /* Animated Waves */
@@ -768,7 +768,9 @@ header h1 span {
   height: 45px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(5px);
+
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
   font-size: 1.2rem;
@@ -886,6 +888,7 @@ body {
   pointer-events: none;
   transition: transform 0.2s ease;
   z-index: 9999;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: invert(1);
 }
 
@@ -1088,4 +1091,93 @@ input:hover ~ .cursor,
   .location-inputs {
     flex-direction: column;
   }
+}
+
+.task-reminder {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+  margin-left: 1rem;
+}
+
+.task-reminder i {
+  color: var(--primary-color);
+}
+
+.reminder-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 0.5rem;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.reminder-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.remove-reminder-btn {
+  background: none;
+  border: none;
+  color: #ff5252;
+  cursor: pointer;
+  padding: 0.2rem;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.remove-reminder-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.task-item:hover .reminder-btn {
+  opacity: 1;
+}
+
+/* Notification styles */
+@keyframes notificationSlideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: notificationSlideIn 0.3s ease-out forwards;
+}
+
+.notification.success {
+  border-left: 4px solid #4caf50;
+}
+
+.notification.warning {
+  border-left: 4px solid #ff9800;
+}
+
+.notification.error {
+  border-left: 4px solid #f44336;
+}
+
+.spans {
+  font-weight: 900;
+  color: rgba(1, 1, 75, 0.655);
+  font-size: large;
 }
