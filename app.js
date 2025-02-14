@@ -655,9 +655,240 @@ class TaskManager {
   }
 }
 
+// Search functionality
+class SearchManager {
+  constructor(taskManager) {
+    this.taskManager = taskManager;
+    this.currentFilter = "all";
+    this.notes = JSON.parse(localStorage.getItem("notes") || "[]");
+    this.initializeSearch();
+  }
+
+  initializeSearch() {
+    const searchInput = document.getElementById("searchInput");
+    const searchResults = document.getElementById("searchResults");
+    const filterButtons = document.querySelectorAll(".search-filter-btn");
+
+    // Search input handler with debounce
+    let debounceTimer;
+    searchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        this.handleSearch(searchInput.value);
+      }, 300);
+    });
+
+    // Focus handler
+    searchInput.addEventListener("focus", () => {
+      this.notes = JSON.parse(localStorage.getItem("notes") || "[]"); // Refresh notes data
+      searchResults.classList.add("active");
+    });
+
+    // Click outside handler
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-container")) {
+        searchResults.classList.remove("active");
+      }
+    });
+
+    // Filter buttons handler
+    filterButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        filterButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        this.currentFilter = btn.dataset.filter;
+        this.handleSearch(searchInput.value);
+      });
+    });
+  }
+
+  handleSearch(query) {
+    const searchResults = document.getElementById("searchResults");
+    query = query.toLowerCase().trim();
+
+    if (!query) {
+      searchResults.innerHTML = "";
+      searchResults.classList.remove("active");
+      return;
+    }
+
+    let results = [];
+
+    // Filter based on current filter type
+    switch (this.currentFilter) {
+      case "tasks":
+        results = this.searchTasks(query);
+        break;
+      case "notes":
+        results = this.searchNotes(query);
+        break;
+      case "date":
+        results = [
+          ...this.searchTasksByDate(query),
+          ...this.searchNotesByDate(query),
+        ];
+        break;
+      default: // 'all'
+        results = [...this.searchTasks(query), ...this.searchNotes(query)];
+    }
+
+    this.displayResults(results);
+  }
+
+  searchTasks(query) {
+    return this.taskManager.tasks
+      .filter((task) => task.text.toLowerCase().includes(query))
+      .map((task) => ({
+        type: "task",
+        id: task.id,
+        text: task.text,
+        completed: task.completed,
+        date: task.createdAt,
+      }));
+  }
+
+  searchNotes(query) {
+    return this.notes
+      .filter(
+        (note) =>
+          note.title.toLowerCase().includes(query) ||
+          note.content.toLowerCase().includes(query)
+      )
+      .map((note) => ({
+        type: "note",
+        id: note.id,
+        text: note.title,
+        content: note.content,
+        date: note.createdAt,
+      }));
+  }
+
+  searchTasksByDate(query) {
+    return this.taskManager.tasks
+      .filter((task) =>
+        this.taskManager
+          .formatDate(task.createdAt)
+          .toLowerCase()
+          .includes(query)
+      )
+      .map((task) => ({
+        type: "task",
+        id: task.id,
+        text: task.text,
+        completed: task.completed,
+        date: task.createdAt,
+      }));
+  }
+
+  searchNotesByDate(query) {
+    return this.notes
+      .filter((note) =>
+        this.taskManager
+          .formatDate(note.createdAt)
+          .toLowerCase()
+          .includes(query)
+      )
+      .map((note) => ({
+        type: "note",
+        id: note.id,
+        text: note.title,
+        content: note.content,
+        date: note.createdAt,
+      }));
+  }
+
+  displayResults(results) {
+    const searchResults = document.getElementById("searchResults");
+    searchResults.innerHTML = "";
+
+    if (results.length === 0) {
+      searchResults.innerHTML = `
+                <div class="search-result-item">
+                    <i class="fas fa-search"></i>
+                    <span>No results found</span>
+                </div>
+            `;
+    } else {
+      results.forEach((result) => {
+        const resultItem = document.createElement("div");
+        resultItem.className = "search-result-item";
+
+        if (result.type === "task") {
+          resultItem.innerHTML = `
+                        <i class="fas ${
+                          result.completed ? "fa-check-circle" : "fa-circle"
+                        }"></i>
+                        <div>
+                            <div class="result-title">${this.taskManager.escapeHtml(
+                              result.text
+                            )}</div>
+                            <small class="result-meta">
+                                <span class="result-type">Task</span> • 
+                                ${this.taskManager.formatDate(result.date)}
+                            </small>
+                        </div>
+                    `;
+        } else {
+          resultItem.innerHTML = `
+                        <i class="fas fa-sticky-note"></i>
+                        <div>
+                            <div class="result-title">${this.taskManager.escapeHtml(
+                              result.text
+                            )}</div>
+                            <div class="result-preview">${this.taskManager.escapeHtml(
+                              result.content.substring(0, 50)
+                            )}${result.content.length > 50 ? "..." : ""}</div>
+                            <small class="result-meta">
+                                <span class="result-type">Note</span> • 
+                                ${this.taskManager.formatDate(result.date)}
+                            </small>
+                        </div>
+                    `;
+        }
+
+        resultItem.addEventListener("click", () => {
+          this.handleResultClick(result);
+        });
+
+        searchResults.appendChild(resultItem);
+      });
+    }
+
+    searchResults.classList.add("active");
+  }
+
+  handleResultClick(result) {
+    if (result.type === "task") {
+      const taskElement = document.querySelector(
+        `[data-task-id="${result.id}"]`
+      );
+      if (taskElement) {
+        taskElement.scrollIntoView({ behavior: "smooth" });
+        taskElement.classList.add("highlight");
+        setTimeout(() => taskElement.classList.remove("highlight"), 2000);
+      }
+    } else {
+      const noteElement = document.querySelector(
+        `[data-note-id="${result.id}"]`
+      );
+      if (noteElement) {
+        noteElement.scrollIntoView({ behavior: "smooth" });
+        noteElement.classList.add("highlight");
+        setTimeout(() => noteElement.classList.remove("highlight"), 2000);
+      }
+    }
+  }
+}
+
 // Initialize the app
 document.addEventListener("DOMContentLoaded", () => {
-  new TaskManager();
+  const taskManager = new TaskManager();
+  new SearchManager(taskManager);
+
+  // Only initialize cursor effects on non-touch devices
+  if (!("ontouchstart" in window)) {
+    new CursorManager();
+  }
 });
 
 // Handle offline/online status
@@ -1124,7 +1355,7 @@ class TaskManagerWithReminders extends TaskManager {
     reminderOptions.innerHTML = `
       <div class="reminder-toggle">
         <button class="btn-reminder" type="button">
-          <i class="fas fa-bell"></i> Add Reminder
+          <i class="fas fa-bell"></i><b>Add Reminder</b>
         </button>
       </div>
       <div class="reminder-details" style="display: none;">

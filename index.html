@@ -66,12 +66,44 @@
         </div>
     </nav>
 
+    <!-- Search Bar Section -->
+    <div class="search-section">
+        <div class="search-container">
+            <div class="search-wrapper">
+                <div class="search-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search tasks and notes..."
+                    aria-label="Search tasks and notes">
+                <div class="search-filters">
+                    <button class="search-filter-btn active" data-filter="all">
+                        <i class="fas fa-search"></i>
+                        <p>All</p>
+                    </button>
+                    <button class="search-filter-btn" data-filter="tasks">
+                        <i class="fas fa-tasks"></i>
+                        <p>Tasks</p>
+                    </button>
+                    <button class="search-filter-btn" data-filter="notes">
+                        <i class="fas fa-sticky-note"></i>
+                        <p>Notes</p>
+                    </button>
+                    <button class="search-filter-btn" data-filter="date">
+                        <i class="fas fa-calendar"></i>
+                        <p>Date</p>
+                    </button>
+                </div>
+            </div>
+            <div id="searchResults" class="search-results"></div>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div class="main">
         <div class="container">
             <!-- App Header -->
             <header>
-                <h1><i class="fas fa-check-double"></i> <span>TaskMaster</span></h1>
+                <h1><i class="fas fa-check-double"></i> <span>Task Master</span></h1>
             </header>
 
             <!-- Task Input Section -->
@@ -111,7 +143,7 @@
             <!-- Note Input Section -->
             <div class="add-note-container">
                 <input type="text" id="noteTitle" placeholder="Note title..." aria-label="Enter note title">
-                <textarea id="noteContent" placeholder="Enter your note..." aria-label="Enter note content"></textarea>
+                <textarea id="noteContent" placeholder="Enter your notes..." aria-label="Enter note content"></textarea>
                 <button id="addNote" class="btn-add">
                     <i class="fas fa-plus"></i> Add Note
                 </button>
@@ -149,46 +181,46 @@
                 <div class="social-links">
                     <!-- Portfolio Website -->
                     <a href="https://my-portfolio-website-eight-pi.vercel.app/" target="_blank"
-                        rel="noopener noreferrer" class="social-btn" title="Visit Portfolio>
+                        rel="noopener noreferrer" class="social-btn" title="Visit Portfolio">
                         <i class=" fa-solid fa-circle-user"></i>
                     </a>
                     <!-- LinkedIn -->
                     <a href="https://www.linkedin.com/in/md-nayaj-mondal" target="_blank" rel="noopener noreferrer"
-                        class="social-btn" title="Visit LinkedIn>
+                        class="social-btn" title="Visit LinkedIn">
                         <i class=" fab fa-linkedin"></i>
                     </a>
                     <!-- GitHub -->
                     <a href="https://github.com/mdnm18" target="_blank" rel="noopener noreferrer" class="social-btn"
-                        title="Visit GitHub>
+                        title="Visit GitHub">
                         <i class=" fab fa-github"></i>
                     </a>
                     <!-- Twitter -->
                     <a href="https://x.com/MD_N_M_18" target="_blank" rel="noopener noreferrer" class="social-btn"
-                        title="Visit X>
-                        <i class='bx bxl-twitter'></i>
+                        title="Visit X">
+                        <i class="bx bxl-twitter"></i>
                     </a>
 
                     <a href=" https://www.instagram.com/md._n.m._india_18" target="_blank" rel="noopener noreferrer"
-                        class="social-btn" title="Visit Instagram>
+                        class="social-btn" title="Visit Instagram">
                         <i class=" fab fa-instagram"></i>
                     </a>
                     <!-- Facebook -->
                     <a href="https://www.facebook.com/mdnayaj.mondal" target="_blank" rel="noopener noreferrer"
-                        class="social-btn" title="Visit Facebook>
+                        class="social-btn" title="Visit Facebook">
                         <i class=" fab fa-facebook"></i>
                     </a>
                     <!-- Telegram -->
                     <a href="https://www.t.me/Md_NM_18_indian" target="_blank" rel="noopener noreferrer"
-                        class="social-btn" title="Visit Telegram>
+                        class="social-btn" title="Visit Telegram">
                         <i class=" fab fa-telegram"></i>
                     </a>
                     <!-- Email -->
-                    <a href="mailto:md.n.m.pius18@gmail.com" class="social-btn" title="Visit Email Id>
+                    <a href="mailto:md.n.m.pius18@gmail.com" class="social-btn" title="Visit Email Id">
                         <i class=" fas fa-envelope"></i>
                     </a>
                     <!-- Discord -->
                     <a href="https://www.discordapp.com/users/1241062535994806393" target="_blank"
-                        rel="noopener noreferrer" class="social-btn" title="Visit Discord>
+                        rel="noopener noreferrer" class="social-btn" title="Visit Discord">
                         <i class=" fab fa-discord"></i>
                     </a>
                 </div>
