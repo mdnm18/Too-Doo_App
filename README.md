@@ -85,10 +85,48 @@ https://too-doo-app.vercel.app/ 🌎
 2. Click **Install** in the address bar 📌.
 3. The app is now available offline in your applications list 📂.
 
+# 🔍 Search Enhancement Release
+
+## ✨ New Features
+Enhanced search functionality with intelligent filtering capabilities to help users quickly find and manage their tasks and notes.
+
+### 🎯 Key Improvements
+- **Universal Search Bar**: Streamlined search interface for all content types
+- **Smart Filtering Options**:
+  - `All`: Search across all content
+  - `Tasks`: Filter for task-specific items
+  - `Notes`: Quick access to notes and documentation
+  - `Date`: Chronological filtering and organization
+
+### 🐛 Bug Fixes
+- Resolved search indexing issues
+- Fixed filter state persistence
+- Improved search response time
+- Enhanced query matching accuracy
+
+## 🔧 Technical Updates
+The search functionality has been rebuilt with performance and user experience in mind, featuring:
+- Improved search algorithm
+- Enhanced filter state management
+- Optimized query handling
+- Better content type recognition
+
+## 📦 Installation
+No additional installation required. The update is automatically available to all users.
+
+## 🤝 Contributing
+We welcome contributions! Please check our contributing guidelines for more information.
+
+## 📝 License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+
 ---
 
 ## 🏆 Credits & Contact
 Developed with ❤️ by **MD. NAYAJ MONDAL**  
 📧 **Email**: [md.n.m.pius18@gmail.com](mailto:md.n.m.pius18@gmail.com)  
 🔗 **LinkedIn**: [linkedin.com/in/md-nayaj-mondal](https://www.linkedin.com/in/md-nayaj-mondal)  
+
+
 
