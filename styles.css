@@ -401,6 +401,16 @@ body,
 }
 
 /* Responsive Design */
+@media (max-width: 1230px) {
+  .search-filters > button > p {
+    display: none;
+  }
+
+  .search-section {
+    width: 85%;
+  }
+}
+
 @media (max-width: 768px) {
   .search-section {
     width: 100%;
@@ -424,10 +434,6 @@ body,
     justify-content: center;
     flex-grow: 1;
     gap: 10px;
-  }
-
-  .search-filters > button > p {
-    display: none;
   }
 
   .search-filter-btn {
